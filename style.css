@@ -1113,3 +1113,29 @@ footer span {
 .credit-font strong {
   font-weight: 600;
 }
+
+.donate-btn {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+
+  box-shadow:
+    0 0 6px rgba(251, 191, 36, 0.6),
+    0 0 12px rgba(251, 191, 36, 0.4);
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(251, 191, 36, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(251, 191, 36, 0.4);
+  }
+}
+
+.donate-btn {
+  animation: glow 2s infinite;
+}
