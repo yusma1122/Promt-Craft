@@ -1,0 +1,3046 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PromptCraft</title>
+    <link rel="icon" href="favicon/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --yellow: #f5c518;
+        --yellow-dim: #d4a810;
+        --yellow-glow: rgba(245, 197, 24, 0.18);
+        --yellow-soft: rgba(245, 197, 24, 0.08);
+        --radius: 14px;
+        --radius-sm: 9px;
+        --radius-xs: 6px;
+        --mono: "DM Mono", monospace;
+        --display: "Syne", sans-serif;
+        --sans: "Nunito", sans-serif;
+        --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      [data-theme="dark"] {
+        --bg: #0c0c0c;
+        --bg2: #121212;
+        --surface: #181818;
+        --surface2: #202020;
+        --surface3: #282828;
+        --border: #2e2e2e;
+        --border-hover: #444;
+        --text: #f0f0f0;
+        --text-muted: #888;
+        --text-dim: #444;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      }
+      [data-theme="light"] {
+        --bg: #f5f4ef;
+        --bg2: #eeede7;
+        --surface: #ffffff;
+        --surface2: #f9f8f4;
+        --surface3: #f0efe9;
+        --border: #e0ddd4;
+        --border-hover: #bbb;
+        --text: #1a1a1a;
+        --text-muted: #666;
+        --text-dim: #aaa;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+        transition:
+          background var(--transition),
+          color var(--transition);
+      }
+
+      /* HEADER */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: rgba(12, 12, 12, 0.9);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition:
+          background var(--transition),
+          border-color var(--transition);
+      }
+      [data-theme="light"] header {
+        background: rgba(245, 244, 239, 0.92);
+      }
+      .logo {
+        font-family: var(--display);
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .logo-mark {
+        width: 28px;
+        height: 28px;
+        background: var(--yellow);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #0c0c0c;
+        font-weight: 900;
+      }
+      .logo span {
+        color: var(--yellow);
+      }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .version-tag {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        padding: 3px 9px;
+        border-radius: 20px;
+      }
+      .theme-toggle {
+        width: 54px;
+        height: 28px;
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        position: relative;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        padding: 3px;
+      }
+      .theme-toggle:hover {
+        border-color: var(--yellow);
+      }
+      .toggle-thumb {
+        width: 20px;
+        height: 20px;
+        background: var(--yellow);
+        border-radius: 50%;
+        transition: transform var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      [data-theme="light"] .toggle-thumb {
+        transform: translateX(26px);
+      }
+
+      /* HERO */
+      .hero {
+        text-align: center;
+        padding: 72px 24px 56px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+      .hero-glow {
+        position: absolute;
+        top: -80px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 700px;
+        height: 400px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(245, 197, 24, 0.1) 0%,
+          transparent 65%
+        );
+        pointer-events: none;
+      }
+      .hero-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(245, 197, 24, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(245, 197, 24, 0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        mask-image: radial-gradient(
+          ellipse at center,
+          black 40%,
+          transparent 75%
+        );
+        -webkit-mask-image: radial-gradient(
+          ellipse at center,
+          black 40%,
+          transparent 75%
+        );
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--yellow);
+        border: 1px solid rgba(245, 197, 24, 0.35);
+        background: var(--yellow-soft);
+        padding: 5px 14px;
+        border-radius: 20px;
+        margin-bottom: 22px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font-family: var(--display);
+        font-size: clamp(34px, 5.5vw, 60px);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 16px;
+        letter-spacing: -2px;
+        color: var(--text);
+      }
+      .hero h1 em {
+        font-style: normal;
+        color: var(--yellow);
+        position: relative;
+      }
+      .hero h1 em::after {
+        content: "";
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--yellow);
+        border-radius: 2px;
+        opacity: 0.35;
+      }
+      .hero p {
+        font-size: 16px;
+        color: var(--text-muted);
+        max-width: 480px;
+        margin: 0 auto 28px;
+        font-weight: 400;
+      }
+      .hero-stats {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .h-stat {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .h-stat-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--yellow);
+        border-radius: 50%;
+      }
+
+      /* LAYOUT */
+      .app-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 440px;
+        gap: 20px;
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+        position: relative;
+        z-index: 1;
+        align-items: start;
+      }
+      .form-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      /* CARD */
+      .section-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transition:
+          border-color var(--transition),
+          background var(--transition);
+        animation: fadeUp 0.4s ease both;
+      }
+      .section-card:hover {
+        border-color: rgba(245, 197, 24, 0.3);
+      }
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-icon {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--yellow-soft);
+        border: 1px solid rgba(245, 197, 24, 0.2);
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .section-title {
+        font-family: var(--display);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        flex: 1;
+      }
+      .section-badge {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--yellow);
+        background: var(--yellow-soft);
+        border: 1px solid rgba(245, 197, 24, 0.2);
+        padding: 2px 8px;
+        border-radius: 20px;
+      }
+      .section-body {
+        padding: 20px;
+      }
+
+      /* FORM */
+      .field {
+        margin-bottom: 16px;
+      }
+      .field:last-child {
+        margin-bottom: 0;
+      }
+      label.field-label {
+        display: block;
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 7px;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 14px;
+        padding: 10px 14px;
+        transition:
+          border-color var(--transition),
+          box-shadow var(--transition),
+          background var(--transition);
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      input[type="text"]::placeholder,
+      textarea::placeholder {
+        color: var(--text-dim);
+      }
+      input[type="text"]:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--yellow);
+        box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.12);
+        background: var(--surface3);
+      }
+      select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 38px;
+        cursor: pointer;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* GROUP LABELS */
+      .group-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--yellow);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin: 18px 0 10px;
+        padding-bottom: 7px;
+        border-bottom: 1px solid rgba(245, 197, 24, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .group-label:first-child {
+        margin-top: 0;
+      }
+      .group-label::before {
+        content: "";
+        width: 14px;
+        height: 2px;
+        background: var(--yellow);
+        border-radius: 1px;
+        display: inline-block;
+        flex-shrink: 0;
+      }
+
+      /* CHECKBOXES */
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+        gap: 7px;
+      }
+      .cb-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 12px;
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all var(--transition);
+        user-select: none;
+      }
+      .cb-item:hover {
+        border-color: rgba(245, 197, 24, 0.4);
+        background: var(--yellow-soft);
+      }
+      .cb-item input[type="checkbox"] {
+        display: none;
+      }
+      .cb-box {
+        width: 17px;
+        height: 17px;
+        border: 1.5px solid var(--text-dim);
+        border-radius: 5px;
+        flex-shrink: 0;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cb-item input:checked ~ .cb-box {
+        background: var(--yellow);
+        border-color: var(--yellow);
+      }
+      .cb-item input:checked ~ .cb-box::after {
+        content: "";
+        width: 5px;
+        height: 8px;
+        border-right: 2px solid #0c0c0c;
+        border-bottom: 2px solid #0c0c0c;
+        transform: rotate(40deg) translateY(-1px);
+        display: block;
+      }
+      .cb-label {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        transition: color var(--transition);
+        font-weight: 500;
+      }
+      .cb-item:has(input:checked) {
+        border-color: rgba(245, 197, 24, 0.5);
+        background: var(--yellow-soft);
+      }
+      .cb-item:has(input:checked) .cb-label {
+        color: var(--text);
+      }
+
+      /* FONT PICKER */
+      .font-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .font-item {
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 12px 8px;
+        cursor: pointer;
+        text-align: center;
+        transition: all var(--transition);
+        background: var(--surface2);
+      }
+      .font-item:hover {
+        border-color: rgba(245, 197, 24, 0.4);
+        background: var(--yellow-soft);
+      }
+      .font-item.selected {
+        border-color: var(--yellow);
+        background: var(--yellow-soft);
+        box-shadow: 0 0 12px rgba(245, 197, 24, 0.1);
+      }
+      .font-preview {
+        font-size: 22px;
+        color: var(--text);
+        margin-bottom: 4px;
+        line-height: 1;
+      }
+      .font-name {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-muted);
+      }
+      .font-item.selected .font-name {
+        color: var(--yellow);
+      }
+
+      /* COLOR PALETTE */
+      .palette-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 8px;
+      }
+      .palette-item {
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        cursor: pointer;
+        transition: all var(--transition);
+        background: var(--surface2);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .palette-item:hover {
+        border-color: rgba(245, 197, 24, 0.4);
+      }
+      .palette-item.selected {
+        border-color: var(--yellow);
+        background: var(--yellow-soft);
+      }
+      .palette-swatch {
+        display: flex;
+        gap: 3px;
+        flex-shrink: 0;
+      }
+      .swatch {
+        width: 14px;
+        height: 24px;
+        border-radius: 4px;
+      }
+      .palette-name {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 500;
+        line-height: 1.3;
+      }
+      .palette-item.selected .palette-name {
+        color: var(--text);
+      }
+
+      /* COMPLEXITY */
+      .complexity-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .comp-label-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        flex: 1;
+      }
+      .comp-dot {
+        width: 34px;
+        height: 34px;
+        border: 1.5px solid var(--border);
+        border-radius: 50%;
+        background: var(--surface2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all var(--transition);
+      }
+      .comp-label-item.active .comp-dot {
+        border-color: var(--yellow);
+        background: var(--yellow);
+        color: #0c0c0c;
+      }
+      .comp-text {
+        font-family: var(--mono);
+        font-size: 9px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .comp-label-item.active .comp-text {
+        color: var(--yellow);
+      }
+      .comp-note {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-dim);
+        padding: 0 2px;
+        margin-top: 2px;
+      }
+
+      /* PILLS */
+      .pill-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .pill {
+        padding: 7px 15px;
+        border: 1.5px solid var(--border);
+        border-radius: 30px;
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition);
+        user-select: none;
+      }
+      .pill:hover {
+        border-color: rgba(245, 197, 24, 0.4);
+        color: var(--text);
+      }
+      .pill.selected {
+        border-color: var(--yellow);
+        background: var(--yellow);
+        color: #0c0c0c;
+        font-weight: 700;
+      }
+
+      /* OUTPUT PANEL */
+      .output-panel {
+        position: sticky;
+        top: 74px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .btn-generate {
+        width: 100%;
+        padding: 16px;
+        background: var(--yellow);
+        color: #0c0c0c;
+        border: none;
+        border-radius: var(--radius);
+        font-family: var(--display);
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        letter-spacing: -0.3px;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(245, 197, 24, 0.4);
+      }
+      .btn-generate:active {
+        transform: translateY(0);
+      }
+
+      .output-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transition:
+          background var(--transition),
+          border-color var(--transition);
+      }
+      .output-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface2);
+      }
+      .terminal-dots {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .tdot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .tdot-r {
+        background: #ff5f56;
+      }
+      .tdot-y {
+        background: #ffbd2e;
+      }
+      .tdot-g {
+        background: #27c93f;
+      }
+      .output-file {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-left: 10px;
+      }
+      .output-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-sm {
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 5px 12px;
+        border-radius: var(--radius-xs);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        transition: all var(--transition);
+        background: transparent;
+        color: var(--text-muted);
+      }
+      .btn-sm:hover {
+        border-color: var(--border-hover);
+        color: var(--text);
+      }
+      .btn-copy-main {
+        background: rgba(245, 197, 24, 0.1);
+        color: var(--yellow);
+        border-color: rgba(245, 197, 24, 0.3);
+      }
+      .btn-copy-main:hover {
+        background: rgba(245, 197, 24, 0.2);
+        color: var(--yellow);
+      }
+      .btn-copy-main.copied {
+        background: rgba(39, 201, 63, 0.1);
+        color: #27c93f;
+        border-color: rgba(39, 201, 63, 0.3);
+      }
+
+      .output-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface2);
+        padding: 0 16px;
+      }
+      .tab-btn {
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 9px 14px;
+        border: none;
+        background: transparent;
+        color: var(--text-dim);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: all var(--transition);
+      }
+      .tab-btn:hover {
+        color: var(--text-muted);
+      }
+      .tab-btn.active {
+        color: var(--yellow);
+        border-bottom-color: var(--yellow);
+      }
+
+      #output-textarea {
+        width: 100%;
+        min-height: 400px;
+        background: var(--bg);
+        border: none;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 1.9;
+        padding: 18px;
+        resize: vertical;
+        outline: none;
+        transition:
+          background var(--transition),
+          color var(--transition);
+      }
+
+      #preview-output {
+        min-height: 400px;
+        padding: 20px;
+        font-size: 13px;
+        line-height: 1.8;
+        overflow-y: auto;
+        color: var(--text);
+        display: none;
+      }
+      .preview-intro {
+        background: var(--yellow-soft);
+        border-left: 3px solid var(--yellow);
+        padding: 10px 14px;
+        border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+        font-size: 13px;
+        color: var(--text);
+        margin-bottom: 18px;
+        line-height: 1.6;
+      }
+      .preview-section {
+        margin-bottom: 16px;
+      }
+      .preview-heading {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--yellow);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .preview-heading::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(245, 197, 24, 0.15);
+      }
+      .preview-item {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 4px;
+        color: var(--text-muted);
+        font-size: 12.5px;
+      }
+      .preview-bullet {
+        color: var(--yellow);
+        flex-shrink: 0;
+        font-size: 10px;
+        margin-top: 4px;
+      }
+
+      .empty-state {
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: var(--text-dim);
+        text-align: center;
+        padding: 32px;
+      }
+      .empty-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--yellow-soft);
+        border: 1px solid rgba(245, 197, 24, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+      }
+      .empty-text {
+        font-size: 13px;
+        line-height: 1.7;
+      }
+      .empty-text strong {
+        color: var(--text-muted);
+      }
+
+      .stats-bar {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--border);
+        background: var(--surface2);
+        overflow: hidden;
+      }
+      .stat-item {
+        flex: 1;
+        padding: 9px 14px;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .stat-item:last-child {
+        border-right: none;
+      }
+      .stat-label {
+        font-family: var(--mono);
+        font-size: 9px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stat-val {
+        font-family: var(--mono);
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--yellow);
+      }
+
+      .quality-bar {
+        padding: 14px 18px;
+        border-top: 1px solid var(--border);
+        background: var(--surface2);
+        display: none;
+      }
+      .quality-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .quality-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .quality-score {
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--yellow);
+      }
+      .quality-track {
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .quality-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--yellow-dim), var(--yellow));
+        border-radius: 2px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+      }
+
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-dim);
+      }
+
+      footer {
+        text-align: center;
+        padding: 28px;
+        border-top: 1px solid var(--border);
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-dim);
+        z-index: 1;
+        position: relative;
+      }
+      footer span {
+        color: var(--yellow);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .section-card:nth-child(1) {
+        animation-delay: 0.04s;
+      }
+      .section-card:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .section-card:nth-child(3) {
+        animation-delay: 0.12s;
+      }
+      .section-card:nth-child(4) {
+        animation-delay: 0.16s;
+      }
+      .section-card:nth-child(5) {
+        animation-delay: 0.2s;
+      }
+      .section-card:nth-child(6) {
+        animation-delay: 0.24s;
+      }
+      .section-card:nth-child(7) {
+        animation-delay: 0.28s;
+      }
+      .section-card:nth-child(8) {
+        animation-delay: 0.32s;
+      }
+      .section-card:nth-child(9) {
+        animation-delay: 0.36s;
+      }
+      .section-card:nth-child(10) {
+        animation-delay: 0.4s;
+      }
+      .section-card:nth-child(11) {
+        animation-delay: 0.44s;
+      }
+      .section-card:nth-child(12) {
+        animation-delay: 0.48s;
+      }
+
+      @media (max-width: 960px) {
+        .app-wrapper {
+          grid-template-columns: 1fr;
+        }
+        .output-panel {
+          position: static;
+        }
+        header {
+          padding: 0 20px;
+        }
+        .hero {
+          padding: 48px 20px 40px;
+        }
+        .app-wrapper {
+          padding: 0 16px 60px;
+        }
+      }
+      @media (max-width: 560px) {
+        .font-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .field-row {
+          grid-template-columns: 1fr;
+        }
+        .checkbox-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .palette-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="logo-mark">⚡</div>
+        Prompt<span>Craft</span>
+      </div>
+      <div class="header-right">
+        <div class="version-tag">v3.0</div>
+        <div
+          class="theme-toggle"
+          onclick="toggleTheme()"
+          title="Toggle Dark / Light Mode"
+        >
+          <div class="toggle-thumb" id="toggleThumb">🌙</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-tag">⚡ AI Prompt Engineering Tool</div>
+      <h1>Advanced <em>Website</em><br />Prompt Generator</h1>
+      <p>
+        Susun prompt yang detail, spesifik, dan terstruktur untuk membangun
+        website profesional menggunakan AI.
+      </p>
+      <div class="hero-stats">
+        <div class="h-stat">
+          <span class="h-stat-dot"></span>12 Parameter Sections
+        </div>
+        <div class="h-stat">
+          <span class="h-stat-dot"></span>55+ Opsi Konfigurasi
+        </div>
+        <div class="h-stat">
+          <span class="h-stat-dot"></span>3 Prompt Style Modes
+        </div>
+      </div>
+    </div>
+
+    <div class="app-wrapper">
+      <div class="form-panel">
+        <!-- 01 PROJECT -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">📌</div>
+            <div class="section-title">Project Information</div>
+            <div class="section-badge">01</div>
+          </div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label">Nama Project</label>
+              <input
+                type="text"
+                id="projectName"
+                placeholder="e.g. Studio Kreativa, DevPortfolio..."
+              />
+            </div>
+            <div class="field">
+              <label class="field-label">Tujuan Website</label>
+              <input
+                type="text"
+                id="projectGoal"
+                placeholder="e.g. Portfolio personal, Landing page jasa, Company profile..."
+              />
+            </div>
+            <div class="field">
+              <label class="field-label">Target Pengguna</label>
+              <input
+                type="text"
+                id="targetUser"
+                placeholder="e.g. Recruiter tech, Klien bisnis B2B..."
+              />
+            </div>
+            <div class="field">
+              <label class="field-label">Industri / Niche</label>
+              <select id="industry">
+                <option value="">— Pilih industri (opsional) —</option>
+                <option value="Teknologi & Software">
+                  Teknologi & Software
+                </option>
+                <option value="Desain & Kreatif">Desain & Kreatif</option>
+                <option value="Bisnis & Konsultasi">Bisnis & Konsultasi</option>
+                <option value="E-commerce & Retail">E-commerce & Retail</option>
+                <option value="Pendidikan & Edtech">Pendidikan & Edtech</option>
+                <option value="Kesehatan & Medis">Kesehatan & Medis</option>
+                <option value="Food & Beverage">Food & Beverage</option>
+                <option value="Fashion & Lifestyle">Fashion & Lifestyle</option>
+                <option value="Startup & SaaS">Startup & SaaS</option>
+                <option value="Freelancer & Personal Brand">
+                  Freelancer & Personal Brand
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 PAGE STRUCTURE -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">📄</div>
+            <div class="section-title">Page Structure</div>
+            <div class="section-badge">02</div>
+          </div>
+          <div class="section-body">
+            <div class="group-label">Core Sections</div>
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Hero section dengan headline utama yang kuat, subheadline informatif, dan tombol CTA utama & sekunder"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Hero</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="About section berisi narasi brand atau personal yang autentik, termasuk misi, visi, dan nilai utama"
+                /><span class="cb-box"></span
+                ><span class="cb-label">About</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Services section menampilkan daftar layanan dalam card layout dengan ikon, judul, dan deskripsi singkat"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Services</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Portfolio section menampilkan karya terbaik dalam grid dengan filter kategori dan thumbnail preview"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Portfolio</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Contact section dengan form kontak lengkap (nama, email, pesan) dan informasi kontak detail"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Contact</span></label
+              >
+            </div>
+            <div class="group-label">Marketing Sections</div>
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Testimonial section menampilkan ulasan klien dalam carousel dengan foto, nama, dan jabatan"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Testimonial</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="FAQ section dengan accordion expand/collapse untuk 6–8 pertanyaan yang sering ditanyakan"
+                /><span class="cb-box"></span
+                ><span class="cb-label">FAQ</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Pricing section dengan tabel perbandingan 3 paket layanan dan tombol CTA per paket"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Pricing</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="CTA Banner section yang bold dan mencolok dengan headline persuasif untuk mendorong konversi"
+                /><span class="cb-box"></span
+                ><span class="cb-label">CTA Banner</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Stats Counter section menampilkan 4 angka pencapaian dengan animasi count-up saat masuk viewport"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Stats</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Client Logos section menampilkan logo klien atau mitra dalam strip horizontal dengan efek marquee"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Clients</span></label
+              >
+            </div>
+            <div class="group-label">Advanced Sections</div>
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Blog Preview section menampilkan 3 artikel terbaru dalam card layout dengan thumbnail dan link"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Blog Preview</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Team section menampilkan anggota tim dalam grid dengan foto, nama, jabatan, dan sosial media"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Tim</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Timeline section menampilkan milestone atau riwayat secara kronologis vertikal atau horizontal"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Timeline</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Gallery section dalam grid masonry dinamis dengan fitur lightbox untuk preview besar"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Gallery</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Newsletter section dengan form subscribe email, value proposition jelas, dan micro copy persuasif"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Newsletter</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="section"
+                  value="Skills section menampilkan kemampuan teknis dalam progress bar, tag cloud, atau icon grid"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Skills</span></label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 DESIGN -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🎨</div>
+            <div class="section-title">Design & Visual Style</div>
+            <div class="section-badge">03</div>
+          </div>
+          <div class="section-body">
+            <div class="group-label">Base Style</div>
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="style"
+                  value="Minimalist — layout bersih, whitespace luas, elemen dipilih dengan selektif"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Minimalist</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="style"
+                  value="Modern — desain kontemporer, tipografi bold, grid rapi dan dinamis"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Modern</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="style"
+                  value="Elegant — tone premium, proporsi harmonis, setiap detail refined"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Elegant</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="style"
+                  value="Corporate — terstruktur, profesional, konsisten, membangun kepercayaan"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Corporate</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="style"
+                  value="Creative — ekspresif, layout asimetris, karakter visual yang kuat dan berani"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Creative</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="style"
+                  value="Tech / Futuristic — aesthetic digital, garis neon, elemen geometric, nuansa hi-tech"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Futuristic</span></label
+              >
+            </div>
+            <div class="group-label">Visual Treatment</div>
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="visual"
+                  value="Glassmorphism — frosted glass effect (backdrop-filter blur), border semi-transparan, layering kaca"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Glassmorphism</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="visual"
+                  value="Neumorphism — soft UI dengan double shadow menciptakan efek emboss dan deboss yang elegan"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Neumorphism</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="visual"
+                  value="Gradient-heavy — gradien bold sebagai elemen utama, mesh gradient pada background, warna vibrant"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Gradient Heavy</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="visual"
+                  value="Flat design — desain datar dengan warna solid, ilustrasi 2D, tanpa efek dimensi berlebihan"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Flat Design</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="visual"
+                  value="3D elements — elemen tiga dimensi, perspektif, dan depth pada card dan ilustrasi"
+                /><span class="cb-box"></span
+                ><span class="cb-label">3D Elements</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="visual"
+                  value="Bento grid — layout kotak berbeda ukuran terinspirasi Apple, terorganisir namun dinamis"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Bento Grid</span></label
+              >
+            </div>
+            <div class="group-label">Color Mode</div>
+            <div class="checkbox-grid" style="grid-template-columns: 1fr 1fr">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="mode"
+                  value="Dark mode — background gelap (#0d0d0d), teks terang, aksen warna yang pop di atas gelap"
+                /><span class="cb-box"></span
+                ><span class="cb-label">🌙 Dark Mode</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="mode"
+                  value="Light mode — background putih atau off-white yang bersih, teks gelap, kesan segar"
+                /><span class="cb-box"></span
+                ><span class="cb-label">☀️ Light Mode</span></label
+              >
+            </div>
+            <div class="group-label">Motion & Effects</div>
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="effect"
+                  value="Scroll animations — elemen masuk viewport dengan efek fade-in, slide-up, atau scale yang smooth"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Scroll Anim</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="effect"
+                  value="Micro interactions — feedback visual halus pada semua interaksi (klik, hover, focus, input)"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Micro Interact</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="effect"
+                  value="Hover effects kaya: card lift, color shift, underline draw, icon rotation pada semua elemen interaktif"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Hover Effects</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="effect"
+                  value="Parallax scrolling subtle pada hero background untuk efek kedalaman visual"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Parallax</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="effect"
+                  value="Loading screen dengan animasi brand dan transisi smooth ke halaman utama"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Loading Screen</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="effect"
+                  value="Custom cursor dengan efek trailing atau magnetic pada button yang mengikuti pointer"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Custom Cursor</span></label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 COLOR PALETTE -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🖌️</div>
+            <div class="section-title">Color Palette</div>
+            <div class="section-badge">04</div>
+          </div>
+          <div class="section-body">
+            <label
+              class="field-label"
+              style="display: block; margin-bottom: 12px"
+              >Pilih Skema Warna</label
+            >
+            <div class="palette-grid" id="paletteGrid">
+              <div
+                class="palette-item"
+                data-palette="Primary: #6C63FF (violet), Secondary: #FF6584 (coral), Accent: #43E97B (green) — vibrant dan modern."
+                onclick="selectPalette(this)"
+              >
+                <div class="palette-swatch">
+                  <div class="swatch" style="background: #6c63ff"></div>
+                  <div class="swatch" style="background: #ff6584"></div>
+                  <div class="swatch" style="background: #43e97b"></div>
+                </div>
+                <div class="palette-name">Violet Coral</div>
+              </div>
+              <div
+                class="palette-item"
+                data-palette="Primary: #F5C518 (golden yellow), Secondary: #1A1A1A (charcoal), Accent: #FFFFFF (white) — bold hitam-kuning high contrast."
+                onclick="selectPalette(this)"
+              >
+                <div class="palette-swatch">
+                  <div class="swatch" style="background: #f5c518"></div>
+                  <div class="swatch" style="background: #1a1a1a"></div>
+                  <div
+                    class="swatch"
+                    style="background: #fff; border: 1px solid #ddd"
+                  ></div>
+                </div>
+                <div class="palette-name">Black Gold</div>
+              </div>
+              <div
+                class="palette-item"
+                data-palette="Primary: #0EA5E9 (sky blue), Secondary: #7C3AED (purple), Accent: #F0F9FF (light) — digital dan fresh."
+                onclick="selectPalette(this)"
+              >
+                <div class="palette-swatch">
+                  <div class="swatch" style="background: #0ea5e9"></div>
+                  <div class="swatch" style="background: #7c3aed"></div>
+                  <div
+                    class="swatch"
+                    style="background: #f0f9ff; border: 1px solid #ddd"
+                  ></div>
+                </div>
+                <div class="palette-name">Sky Purple</div>
+              </div>
+              <div
+                class="palette-item"
+                data-palette="Primary: #10B981 (emerald), Secondary: #1E293B (slate dark), Accent: #F8FAFC (off-white) — elegan dan natural."
+                onclick="selectPalette(this)"
+              >
+                <div class="palette-swatch">
+                  <div class="swatch" style="background: #10b981"></div>
+                  <div class="swatch" style="background: #1e293b"></div>
+                  <div
+                    class="swatch"
+                    style="background: #f8fafc; border: 1px solid #ddd"
+                  ></div>
+                </div>
+                <div class="palette-name">Emerald Slate</div>
+              </div>
+              <div
+                class="palette-item"
+                data-palette="Primary: #EF4444 (red), Secondary: #111827 (near black), Accent: #FEF2F2 (soft red tint) — bold dan berkarakter."
+                onclick="selectPalette(this)"
+              >
+                <div class="palette-swatch">
+                  <div class="swatch" style="background: #ef4444"></div>
+                  <div class="swatch" style="background: #111827"></div>
+                  <div
+                    class="swatch"
+                    style="background: #fef2f2; border: 1px solid #ddd"
+                  ></div>
+                </div>
+                <div class="palette-name">Red Dark</div>
+              </div>
+              <div
+                class="palette-item"
+                data-palette="Primary: #F97316 (orange), Secondary: #1C1917 (warm black), Accent: #FFF7ED (cream) — hangat dan energetik."
+                onclick="selectPalette(this)"
+              >
+                <div class="palette-swatch">
+                  <div class="swatch" style="background: #f97316"></div>
+                  <div class="swatch" style="background: #1c1917"></div>
+                  <div
+                    class="swatch"
+                    style="background: #fff7ed; border: 1px solid #ddd"
+                  ></div>
+                </div>
+                <div class="palette-name">Orange Warm</div>
+              </div>
+            </div>
+            <div class="field" style="margin-top: 14px">
+              <label class="field-label">Warna Kustom (opsional)</label>
+              <input
+                type="text"
+                id="customColor"
+                placeholder="e.g. Primary: #FF6B35, Secondary: #004E89, Accent: #F7C59F"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 TYPOGRAPHY -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🔤</div>
+            <div class="section-title">Typography</div>
+            <div class="section-badge">05</div>
+          </div>
+          <div class="section-body">
+            <label
+              class="field-label"
+              style="display: block; margin-bottom: 12px"
+              >Font Utama</label
+            >
+            <div class="font-grid" id="fontGrid">
+              <div
+                class="font-item"
+                data-font="Poppins"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;Poppins&quot;, sans-serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">Poppins</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="Inter"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;Inter&quot;, sans-serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">Inter</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="Roboto"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;Roboto&quot;, sans-serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">Roboto</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="Open Sans"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;Open Sans&quot;, sans-serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">Open Sans</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="Montserrat"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;Montserrat&quot;, sans-serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">Montserrat</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="Playfair Display"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;Playfair Display&quot;, serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">Playfair</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="DM Sans"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;DM Sans&quot;, sans-serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">DM Sans</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="Space Grotesk"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: sans-serif; letter-spacing: -1px"
+                >
+                  Aa
+                </div>
+                <div class="font-name">S. Grotesk</div>
+              </div>
+              <div
+                class="font-item"
+                data-font="Nunito"
+                onclick="selectFont(this)"
+              >
+                <div
+                  class="font-preview"
+                  style="font-family: &quot;Nunito&quot;, sans-serif"
+                >
+                  Aa
+                </div>
+                <div class="font-name">Nunito</div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label">Font Weight</label>
+                <select id="fontWeight">
+                  <option value="">— Pilih —</option>
+                  <option value="light (300) — elegan dan ringan">
+                    Light (300)
+                  </option>
+                  <option value="regular (400) — default body text yang nyaman">
+                    Regular (400)
+                  </option>
+                  <option value="medium (500) — keseimbangan optimal">
+                    Medium (500)
+                  </option>
+                  <option value="bold (700) — impactful dan kuat">
+                    Bold (700)
+                  </option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">Heading Style</label>
+                <select id="headingStyle">
+                  <option value="">— Pilih —</option>
+                  <option
+                    value="clean dan tipis — letter-spacing lebar, minimalist"
+                  >
+                    Clean Thin
+                  </option>
+                  <option value="bold dan besar — impactful, kontras tinggi">
+                    Bold Impact
+                  </option>
+                  <option value="dekoratif — karakter ekspresif, display font">
+                    Decorative
+                  </option>
+                  <option
+                    value="condensed — tinggi dan padat, sangat kuat visual"
+                  >
+                    Condensed
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 06 TECH STACK -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">⚙️</div>
+            <div class="section-title">Tech Stack</div>
+            <div class="section-badge">06</div>
+          </div>
+          <div class="section-body">
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label">CSS Framework</label>
+                <select id="cssFramework">
+                  <option value="">— Pilih —</option>
+                  <option
+                    value="Vanilla CSS murni dengan CSS Custom Properties, Flexbox, dan CSS Grid"
+                  >
+                    Vanilla CSS
+                  </option>
+                  <option
+                    value="Tailwind CSS v3 dengan utility-first approach dan konfigurasi tema via CDN"
+                  >
+                    Tailwind CSS
+                  </option>
+                  <option
+                    value="Bootstrap 5 dengan grid system 12 kolom dan komponen siap pakai"
+                  >
+                    Bootstrap 5
+                  </option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">JavaScript</label>
+                <select id="jsFramework">
+                  <option value="">— Pilih —</option>
+                  <option
+                    value="Vanilla JavaScript ES6+ murni — class, arrow functions, DOM API modern"
+                  >
+                    Vanilla JS
+                  </option>
+                  <option
+                    value="Alpine.js v3 untuk reaktivitas deklaratif ringan tanpa build step"
+                  >
+                    Alpine.js
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="group-label">Optional Libraries (CDN)</div>
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="AOS v2 (Animate On Scroll) — animasi entrance element saat scroll dengan berbagai efek"
+                /><span class="cb-box"></span
+                ><span class="cb-label">AOS</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="Swiper.js v11 — slider dan carousel fully responsive dengan touch support"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Swiper.js</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="GSAP + ScrollTrigger — animasi JavaScript kompleks dan timeline animation profesional"
+                /><span class="cb-box"></span
+                ><span class="cb-label">GSAP</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="Typed.js — efek mengetik otomatis pada headline dengan konfigurasi string dan kecepatan"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Typed.js</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="Lottie Web — animasi JSON berkualitas tinggi untuk ilustrasi dan ikon animasi ringan"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Lottie</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="Particles.js — efek partikel interaktif pada background hero untuk tampilan hi-tech"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Particles.js</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="Isotope.js — filtering dan sorting portofolio dengan animasi smooth berbasis layout"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Isotope</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="lib"
+                  value="GLightbox — lightbox modern untuk galeri gambar dan video dengan gesture support"
+                /><span class="cb-box"></span
+                ><span class="cb-label">GLightbox</span></label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 07 FEATURES -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">✨</div>
+            <div class="section-title">Functional Features</div>
+            <div class="section-badge">07</div>
+          </div>
+          <div class="section-body">
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Fully responsive mobile-first dengan breakpoint xs/sm/md/lg/xl yang konsisten"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Responsive</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Sticky navbar berubah style saat scroll: transparan di hero → solid dengan shadow di bawah"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Sticky Navbar</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Smooth scrolling ke tiap section dengan offset yang memperhitungkan tinggi fixed navbar"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Smooth Scroll</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Mobile navigation hamburger icon beranimasi (3 bar → X) dengan overlay fullscreen atau drawer"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Hamburger Menu</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Form validation real-time client-side: required field, format email, pesan error yang jelas"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Form Validation</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Scroll spy — link aktif di navbar berubah highlight sesuai section yang sedang terlihat"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Scroll Spy</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Lazy loading gambar menggunakan Intersection Observer API untuk performa optimal"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Lazy Loading</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Back to top button muncul setelah scroll 300px dengan animasi fade-in"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Back to Top</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Dark/light mode toggle menyimpan preferensi di localStorage dan deteksi system preference"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Dark Mode Toggle</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="feature"
+                  value="Scroll progress indicator — bar tipis di atas halaman menunjukkan sejauh mana user scroll"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Scroll Progress</span></label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 08 CONTENT -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">💬</div>
+            <div class="section-title">Content Style</div>
+            <div class="section-badge">08</div>
+          </div>
+          <div class="section-body">
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label">Tone of Voice</label>
+                <select id="tone">
+                  <option value="">— Pilih —</option>
+                  <option
+                    value="Professional — formal, terstruktur, data-driven, meyakinkan"
+                  >
+                    Professional
+                  </option>
+                  <option
+                    value="Friendly — hangat, approachable, sapaan personal"
+                  >
+                    Friendly
+                  </option>
+                  <option
+                    value="Persuasive — benefit-focused, storytelling emosional, mendorong aksi"
+                  >
+                    Persuasive
+                  </option>
+                  <option
+                    value="Casual — santai, relatable, bahasa sehari-hari"
+                  >
+                    Casual
+                  </option>
+                  <option
+                    value="Bold & Direct — percaya diri, tegas, straight to the point"
+                  >
+                    Bold & Direct
+                  </option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">Bahasa Konten</label>
+                <select id="language">
+                  <option value="">— Pilih —</option>
+                  <option
+                    value="Bahasa Indonesia yang baik, lugas, natural, dan mudah dipahami"
+                  >
+                    Bahasa Indonesia
+                  </option>
+                  <option
+                    value="English (American) — clear, concise, jargon-free, dan professional"
+                  >
+                    English (US)
+                  </option>
+                  <option
+                    value="English (British) — formal, polished, dan refined"
+                  >
+                    English (UK)
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="field" style="margin-top: 12px">
+              <label class="field-label"
+                >Brand Persona / Referensi Karakter</label
+              >
+              <input
+                type="text"
+                id="brandPersona"
+                placeholder="e.g. Minimalis seperti Apple, Energetik seperti Nike, Premium seperti Louis Vuitton..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- 09 AI TARGET -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🤖</div>
+            <div class="section-title">AI Target & Prompt Mode</div>
+            <div class="section-badge">09</div>
+          </div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label" style="margin-bottom: 10px"
+                >Target AI Model</label
+              >
+              <div class="pill-group" id="aiTargetGroup">
+                <div
+                  class="pill selected"
+                  data-ai="ChatGPT (GPT-4o)"
+                  onclick="selectPill(this, 'ai')"
+                >
+                  GPT-4o
+                </div>
+                <div
+                  class="pill"
+                  data-ai="Claude Sonnet"
+                  onclick="selectPill(this, 'ai')"
+                >
+                  Claude
+                </div>
+                <div
+                  class="pill"
+                  data-ai="Gemini Pro"
+                  onclick="selectPill(this, 'ai')"
+                >
+                  Gemini
+                </div>
+                <div
+                  class="pill"
+                  data-ai="Copilot"
+                  onclick="selectPill(this, 'ai')"
+                >
+                  Copilot
+                </div>
+                <div
+                  class="pill"
+                  data-ai="AI manapun (universal)"
+                  onclick="selectPill(this, 'ai')"
+                >
+                  Universal
+                </div>
+              </div>
+            </div>
+            <div class="field" style="margin-top: 18px">
+              <label class="field-label" style="margin-bottom: 10px"
+                >Prompt Style</label
+              >
+              <div class="pill-group" id="promptStyleGroup">
+                <div
+                  class="pill"
+                  data-style="ringkas"
+                  onclick="selectPill(this, 'style')"
+                >
+                  ⚡ Ringkas
+                </div>
+                <div
+                  class="pill selected"
+                  data-style="detail"
+                  onclick="selectPill(this, 'style')"
+                >
+                  📋 Detail
+                </div>
+                <div
+                  class="pill"
+                  data-style="ultra-detail"
+                  onclick="selectPill(this, 'style')"
+                >
+                  🔬 Ultra Detail
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 9px;
+                  font-family: var(--mono);
+                  font-size: 10px;
+                  color: var(--text-dim);
+                  padding: 0 2px;
+                "
+                id="styleDesc"
+              >
+                Detail — prompt lengkap dengan spesifikasi teknis jelas, cocok
+                untuk sebagian besar project.
+              </div>
+            </div>
+            <div class="field" style="margin-top: 18px">
+              <label class="field-label" style="margin-bottom: 14px"
+                >Tingkat Kompleksitas Website</label
+              >
+              <div class="complexity-labels">
+                <div
+                  class="comp-label-item active"
+                  id="comp-1"
+                  onclick="setComplexity(1)"
+                >
+                  <div class="comp-dot">🌱</div>
+                  <div class="comp-text">Simple</div>
+                </div>
+                <div
+                  class="comp-label-item"
+                  id="comp-2"
+                  onclick="setComplexity(2)"
+                >
+                  <div class="comp-dot">⚡</div>
+                  <div class="comp-text">Standard</div>
+                </div>
+                <div
+                  class="comp-label-item"
+                  id="comp-3"
+                  onclick="setComplexity(3)"
+                >
+                  <div class="comp-dot">🔥</div>
+                  <div class="comp-text">Advanced</div>
+                </div>
+                <div
+                  class="comp-label-item"
+                  id="comp-4"
+                  onclick="setComplexity(4)"
+                >
+                  <div class="comp-dot">💎</div>
+                  <div class="comp-text">Premium</div>
+                </div>
+              </div>
+              <div class="comp-note" id="compDesc">
+                Simple — website bersih dengan fungsionalitas dasar, ideal untuk
+                landing page cepat.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10 CODE STRUCTURE -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">📦</div>
+            <div class="section-title">Code Structure Output</div>
+            <div class="section-badge">10</div>
+          </div>
+          <div class="section-body">
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label">Format Output</label>
+                <select id="codeStructure">
+                  <option value="">— Pilih —</option>
+                  <option
+                    value="Single file — semua HTML, CSS, JS dalam satu file index.html (inline style dan script)"
+                  >
+                    Single File
+                  </option>
+                  <option
+                    value="Multi file — index.html + style.css + script.js terpisah dengan path linking benar"
+                  >
+                    Multi File
+                  </option>
+                  <option
+                    value="Multi file + folder struktur — index.html di root, /css/style.css, /js/script.js, /assets/"
+                  >
+                    Multi File + Folder
+                  </option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">HTML Boilerplate</label>
+                <select id="boilerplate">
+                  <option value="">— Pilih —</option>
+                  <option
+                    value="Minimal — hanya tag HTML esensial, bersih tanpa bloat"
+                  >
+                    Minimal
+                  </option>
+                  <option
+                    value="Standard — HTML5 lengkap: meta charset, viewport, description, og-tags"
+                  >
+                    Standard
+                  </option>
+                  <option
+                    value="Full SEO — HTML5 + semua meta SEO, Open Graph, Twitter Card, schema.org"
+                  >
+                    Full SEO
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 11 QUALITY -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🏆</div>
+            <div class="section-title">Output Quality Standards</div>
+            <div class="section-badge">11</div>
+          </div>
+          <div class="section-body">
+            <div class="checkbox-grid">
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="quality"
+                  value="Clean code — indentasi 2 space konsisten, naming convention yang jelas, tanpa dead code"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Clean Code</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="quality"
+                  value="Well-commented — komentar section, fungsi JS, dan CSS yang kompleks"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Well Commented</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="quality"
+                  value="SEO-friendly — semantic HTML5, meta tags lengkap, Open Graph, alt text, heading hierarchy"
+                /><span class="cb-box"></span
+                ><span class="cb-label">SEO Friendly</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="quality"
+                  value="Accessibility WCAG 2.1 AA — ARIA labels, keyboard navigation, color contrast 4.5:1"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Accessibility</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="quality"
+                  value="Performance optimized — async/defer script, image optimization, no blocking render"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Performance</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="quality"
+                  value="Cross-browser compatible — Chrome, Firefox, Safari, Edge versi modern"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Cross-browser</span></label
+              >
+              <label class="cb-item"
+                ><input
+                  type="checkbox"
+                  name="quality"
+                  value="Print stylesheet — tampilan optimal saat dicetak, sembunyikan navigasi dan dekorasi"
+                /><span class="cb-box"></span
+                ><span class="cb-label">Print Style</span></label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 12 CUSTOM -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-icon">🧩</div>
+            <div class="section-title">Custom Instruction</div>
+            <div class="section-badge">12</div>
+          </div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label">Instruksi Spesifik Tambahan</label>
+              <textarea
+                id="customInstruction"
+                placeholder="Tambahkan instruksi khusus yang tidak ada di form...
+
+Contoh:
+• Gunakan video background looping tanpa suara di hero
+• Tambahkan section 'Tech Stack' dengan ikon SVG per teknologi  
+• Navbar menggunakan mega-menu pada desktop
+• Integrasikan Google Maps embed di Contact section
+• Buat gradient warna dari atas ke bawah halaman secara konsisten"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /form-panel -->
+
+      <!-- OUTPUT PANEL -->
+      <div class="output-panel">
+        <button class="btn-generate" onclick="generatePrompt()">
+          <span style="font-size: 18px">⚡</span> Generate Prompt Sekarang
+        </button>
+
+        <div class="output-card">
+          <div class="output-header">
+            <div style="display: flex; align-items: center; gap: 10px">
+              <div class="terminal-dots">
+                <div class="tdot tdot-r"></div>
+                <div class="tdot tdot-y"></div>
+                <div class="tdot tdot-g"></div>
+              </div>
+              <span class="output-file">prompt_output.txt</span>
+            </div>
+            <div class="output-actions">
+              <button class="btn-sm" onclick="clearOutput()">✕ Clear</button>
+              <button
+                class="btn-sm btn-copy-main"
+                id="copyBtn"
+                onclick="copyOutput()"
+              >
+                ⎘ Copy
+              </button>
+            </div>
+          </div>
+
+          <div class="output-tabs" id="outputTabs" style="display: none">
+            <button class="tab-btn active" onclick="switchTab('raw', this)">
+              Raw
+            </button>
+            <button class="tab-btn" onclick="switchTab('preview', this)">
+              Preview
+            </button>
+          </div>
+
+          <div id="emptyState" class="empty-state">
+            <div class="empty-icon">⚡</div>
+            <div class="empty-text">
+              Isi form di sebelah kiri,<br />lalu klik
+              <strong>Generate Prompt</strong><br /><span
+                style="
+                  font-size: 12px;
+                  color: var(--text-dim);
+                  display: block;
+                  margin-top: 4px;
+                "
+                >Siap di-paste ke ChatGPT, Claude, dll</span
+              >
+            </div>
+          </div>
+
+          <textarea
+            id="output-textarea"
+            style="display: none"
+            readonly
+          ></textarea>
+          <div id="preview-output"></div>
+
+          <div class="stats-bar" id="statsBar" style="display: none">
+            <div class="stat-item">
+              <div class="stat-label">Kata</div>
+              <div class="stat-val" id="statWords">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Karakter</div>
+              <div class="stat-val" id="statChars">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Sections</div>
+              <div class="stat-val" id="statSections">0</div>
+            </div>
+          </div>
+
+          <div class="quality-bar" id="qualityBar">
+            <div class="quality-row">
+              <div class="quality-label">Prompt Quality Score</div>
+              <div class="quality-score" id="qualityScore">0%</div>
+            </div>
+            <div class="quality-track">
+              <div class="quality-fill" id="qualityFill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /app-wrapper -->
+
+    <footer>
+      <span>PromptCraft</span> v3.0 · Advanced Website Prompt Generator · Made
+      for Developers
+    </footer>
+
+    <script>
+      let selectedFont = "",
+        selectedPalette = "",
+        selectedAI = "ChatGPT (GPT-4o)",
+        selectedPromptStyle = "detail",
+        selectedComplexity = 1,
+        currentTab = "raw",
+        generatedPrompt = "";
+
+      // THEME
+      function toggleTheme() {
+        const html = document.documentElement;
+        const isLight = html.getAttribute("data-theme") === "light";
+        html.setAttribute("data-theme", isLight ? "dark" : "light");
+        document.getElementById("toggleThumb").textContent = isLight
+          ? "🌙"
+          : "☀️";
+        localStorage.setItem("theme", isLight ? "dark" : "light");
+      }
+      (function () {
+        const saved = localStorage.getItem("theme");
+        const pref = window.matchMedia("(prefers-color-scheme:dark)").matches
+          ? "dark"
+          : "light";
+        const t = saved || pref;
+        document.documentElement.setAttribute("data-theme", t);
+        const th = document.getElementById("toggleThumb");
+        if (th) th.textContent = t === "dark" ? "🌙" : "☀️";
+      })();
+
+      function selectFont(el) {
+        document
+          .querySelectorAll(".font-item")
+          .forEach((f) => f.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedFont = el.dataset.font;
+      }
+      function selectPalette(el) {
+        document
+          .querySelectorAll(".palette-item")
+          .forEach((p) => p.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedPalette = el.dataset.palette;
+      }
+
+      function selectPill(el, type) {
+        el.parentElement
+          .querySelectorAll(".pill")
+          .forEach((p) => p.classList.remove("selected"));
+        el.classList.add("selected");
+        if (type === "ai") selectedAI = el.dataset.ai;
+        if (type === "style") {
+          selectedPromptStyle = el.dataset.style;
+          const d = {
+            ringkas:
+              "Ringkas — prompt padat dan to-the-point, ideal untuk context window kecil.",
+            detail:
+              "Detail — prompt lengkap dengan spesifikasi teknis jelas, cocok untuk sebagian besar project.",
+            "ultra-detail":
+              "Ultra Detail — prompt sangat komprehensif, ideal untuk project kompleks yang butuh presisi tinggi.",
+          };
+          document.getElementById("styleDesc").textContent =
+            d[el.dataset.style];
+        }
+      }
+
+      const compDescs = {
+        1: "Simple — website bersih dengan fungsionalitas dasar, ideal untuk landing page cepat.",
+        2: "Standard — website profesional lengkap dengan animasi dan fitur umum yang solid.",
+        3: "Advanced — website kompleks dengan interaksi kaya, animasi canggih, dan UX premium.",
+        4: "Premium — website kelas dunia, semua fitur terbaik, performa maksimal, detail tak tertinggal.",
+      };
+      function setComplexity(n) {
+        selectedComplexity = n;
+        for (let i = 1; i <= 4; i++)
+          document
+            .getElementById("comp-" + i)
+            .classList.toggle("active", i === n);
+        document.getElementById("compDesc").textContent = compDescs[n];
+      }
+
+      function getChecked(name) {
+        return [
+          ...document.querySelectorAll(`input[name="${name}"]:checked`),
+        ].map((cb) => cb.value);
+      }
+
+      function switchTab(tab, btn) {
+        currentTab = tab;
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const raw = document.getElementById("output-textarea");
+        const prev = document.getElementById("preview-output");
+        if (tab === "raw") {
+          raw.style.display = "block";
+          prev.style.display = "none";
+        } else {
+          raw.style.display = "none";
+          prev.style.display = "block";
+          renderPreview(generatedPrompt);
+        }
+      }
+
+      function renderPreview(prompt) {
+        const c = document.getElementById("preview-output");
+        if (!prompt) {
+          c.innerHTML = "";
+          return;
+        }
+        const lines = prompt.split("\n");
+        let html = "";
+        let inSec = false;
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          if (i === 0) {
+            html += `<div class="preview-intro">${line}</div>`;
+            continue;
+          }
+          if (/^[📌📄🎨🖌️🔤⚙️✨💬🤖📦🏆🧩🧠⚠️]/.test(line)) {
+            if (inSec) html += "</div>";
+            html += `<div class="preview-section"><div class="preview-heading">${line}</div>`;
+            inSec = true;
+          } else if (line.startsWith("•") || line.startsWith("→")) {
+            html += `<div class="preview-item"><span class="preview-bullet">▸</span><span>${line.replace(/^[•→]\s*/, "")}</span></div>`;
+          } else if (line.match(/^\d+\./)) {
+            html += `<div class="preview-item"><span class="preview-bullet">▸</span><span>${line}</span></div>`;
+          } else if (inSec) {
+            html += `<div class="preview-item" style="color:var(--text-muted);font-style:italic">${line}</div>`;
+          }
+        }
+        if (inSec) html += "</div>";
+        c.innerHTML = html;
+      }
+
+      function calcScore() {
+        let s = 0;
+        const ids = ["projectName", "projectGoal", "targetUser"];
+        ids.forEach((id) => {
+          if (document.getElementById(id).value.trim()) s++;
+        });
+        if (document.getElementById("industry").value) s++;
+        const secs = getChecked("section").length;
+        s += secs >= 3 ? 2 : secs > 0 ? 1 : 0;
+        if (getChecked("style").length > 0) s++;
+        if (getChecked("visual").length > 0) s++;
+        if (getChecked("mode").length > 0) s++;
+        if (selectedFont) s++;
+        if (selectedPalette || document.getElementById("customColor").value)
+          s++;
+        if (document.getElementById("cssFramework").value) s++;
+        if (document.getElementById("jsFramework").value) s++;
+        const feats = getChecked("feature").length;
+        s += feats >= 3 ? 2 : feats > 0 ? 1 : 0;
+        if (document.getElementById("tone").value) s++;
+        if (document.getElementById("language").value) s++;
+        if (document.getElementById("codeStructure").value) s++;
+        if (getChecked("quality").length >= 3) s++;
+        if (
+          document.getElementById("customInstruction").value.trim().length > 20
+        )
+          s++;
+        return Math.round((s / 20) * 100);
+      }
+
+      function generatePrompt() {
+        const v = (id) => document.getElementById(id).value.trim();
+        const projectName = v("projectName"),
+          projectGoal = v("projectGoal"),
+          targetUser = v("targetUser"),
+          industry = v("industry");
+        const sections = getChecked("section"),
+          styles = getChecked("style"),
+          visuals = getChecked("visual"),
+          modes = getChecked("mode"),
+          effects = getChecked("effect");
+        const font = selectedFont,
+          fontWeight = v("fontWeight"),
+          headingStyle = v("headingStyle");
+        const paletteVal = selectedPalette,
+          customColor = v("customColor");
+        const cssFramework = v("cssFramework"),
+          jsFramework = v("jsFramework"),
+          libs = getChecked("lib");
+        const features = getChecked("feature"),
+          tone = v("tone"),
+          language = v("language"),
+          brandPersona = v("brandPersona");
+        const codeStructure = v("codeStructure"),
+          boilerplate = v("boilerplate"),
+          qualities = getChecked("quality");
+        const custom = v("customInstruction");
+        const isUltra = selectedPromptStyle === "ultra-detail",
+          isRingkas = selectedPromptStyle === "ringkas";
+        const compLabel = {
+          1: "Simple",
+          2: "Standard",
+          3: "Advanced",
+          4: "Premium",
+        };
+        const compDetail = {
+          1: "Fungsionalitas inti saja, hindari kompleksitas berlebihan.",
+          2: "Fitur-fitur standar dengan kualitas solid dan konsisten.",
+          3: "Animasi kaya, interaksi halus, dan pengalaman pengguna yang premium.",
+          4: "Standar tertinggi: desain, performa, aksesibilitas, dan UX. Tidak ada detail yang boleh terlewat.",
+        };
+
+        let p = [];
+
+        // INTRO
+        if (isRingkas) {
+          p.push(
+            `Buat website one page profesional. Target AI: ${selectedAI}.`,
+          );
+        } else {
+          p.push(
+            `Kamu adalah senior full-stack developer dan UI/UX designer berpengalaman. Buatkan website one page profesional berdasarkan spesifikasi teknis berikut secara menyeluruh dan akurat. Jangan bertanya, jangan tambahkan yang tidak diminta — langsung hasilkan kode lengkap yang siap digunakan.`,
+          );
+          if (!isRingkas)
+            p.push(
+              `[Dioptimalkan untuk: ${selectedAI} | Prompt Style: ${selectedPromptStyle.toUpperCase()} | Complexity: ${compLabel[selectedComplexity]}]`,
+            );
+        }
+        p.push("");
+
+        // PROJECT OVERVIEW
+        if (projectName || projectGoal || targetUser || industry) {
+          p.push("📌 PROJECT OVERVIEW:");
+          if (projectName) p.push(`• Nama Project: "${projectName}"`);
+          if (projectGoal) p.push(`• Tujuan Website: ${projectGoal}`);
+          if (targetUser) p.push(`• Target Pengguna: ${targetUser}`);
+          if (industry) p.push(`• Industri/Niche: ${industry}`);
+          if (selectedComplexity > 1)
+            p.push(
+              `• Tingkat Kompleksitas: ${compLabel[selectedComplexity]} — ${compDetail[selectedComplexity]}`,
+            );
+          if (brandPersona)
+            p.push(
+              `• Brand Persona: Desain harus mencerminkan karakter "${brandPersona}"`,
+            );
+          p.push("");
+        }
+
+        // PAGE STRUCTURE
+        if (sections.length > 0) {
+          p.push("📄 PAGE STRUCTURE:");
+          p.push(
+            "Susun halaman dengan section berikut secara berurutan dari atas ke bawah:",
+          );
+          sections.forEach((s, i) => p.push(`${i + 1}. ${s}`));
+          if (!isRingkas) {
+            p.push("");
+            p.push("Ketentuan struktur:");
+            p.push(
+              '• Setiap section memiliki ID anchor sesuai nama (e.g. id="hero", id="about")',
+            );
+            p.push(
+              "• Navbar berisi link ke semua section menggunakan anchor href",
+            );
+            p.push(
+              "• Footer berisi copyright, navigasi ringkas, dan sosial media",
+            );
+            if (isUltra) {
+              p.push(
+                "• Padding vertikal section: minimal 80px desktop, 60px mobile",
+              );
+              p.push(
+                "• Container max-width 1200px centered dengan padding horizontal 24px",
+              );
+              p.push(
+                "• Section genap/ganjil boleh memiliki background berbeda untuk ritme visual",
+              );
+            }
+          }
+          p.push("");
+        }
+
+        // DESIGN SYSTEM
+        if (styles.length || visuals.length || modes.length || effects.length) {
+          p.push("🎨 DESIGN SYSTEM:");
+          if (styles.length) {
+            p.push("Base Style:");
+            styles.forEach((s) => p.push(`• ${s}`));
+          }
+          if (visuals.length) {
+            p.push("Visual Treatment:");
+            visuals.forEach((v) => p.push(`• ${v}`));
+          }
+          if (modes.length) {
+            p.push("Color Mode:");
+            modes.forEach((m) => p.push(`• ${m}`));
+          }
+          if (effects.length) {
+            p.push("Motion & Effects:");
+            effects.forEach((e) => p.push(`• ${e}`));
+          }
+          if (!isRingkas) {
+            p.push("");
+            p.push("Prinsip desain wajib:");
+            p.push(
+              "• Spacing sistem berbasis 8px (8, 16, 24, 32, 48, 64, 80, 96px)",
+            );
+            p.push(
+              "• Border radius konsisten: small=6px, medium=12px, large=20px",
+            );
+            p.push(
+              "• Semua warna dan ukuran menggunakan CSS Custom Properties (:root variables)",
+            );
+            if (isUltra) {
+              p.push(
+                "• Z-index hierarchy: base=1, card=10, dropdown=100, modal=500, toast=1000",
+              );
+              p.push(
+                "• Setiap komponen harus konsisten visual di seluruh halaman tanpa inkonsistensi",
+              );
+            }
+          }
+          p.push("");
+        }
+
+        // COLOR PALETTE
+        if (customColor || paletteVal) {
+          p.push("🖌️ COLOR PALETTE:");
+          if (customColor) {
+            p.push("Gunakan skema warna kustom berikut:");
+            p.push(`• ${customColor}`);
+          } else {
+            p.push(
+              "Gunakan palet warna berikut secara konsisten di seluruh desain:",
+            );
+            p.push(`• ${paletteVal}`);
+          }
+          if (!isRingkas) {
+            p.push(
+              "• Definisikan semua warna sebagai CSS Custom Properties di :root {}",
+            );
+            p.push(
+              "• Pastikan semua kombinasi teks-background memenuhi WCAG contrast ratio 4.5:1",
+            );
+          }
+          p.push("");
+        }
+
+        // TYPOGRAPHY
+        if (font || fontWeight || headingStyle) {
+          p.push("🔤 TYPOGRAPHY:");
+          if (font)
+            p.push(
+              `• Font utama: "${font}" — import dari Google Fonts via CDN link di <head>`,
+            );
+          if (fontWeight) p.push(`• Font weight preference: ${fontWeight}`);
+          if (headingStyle) p.push(`• Heading style: ${headingStyle}`);
+          if (!isRingkas) {
+            p.push("• Type scale:");
+            p.push("  H1: 56–72px desktop / 36–48px mobile — hero headline");
+            p.push("  H2: 40–48px desktop / 28–36px mobile — section heading");
+            p.push("  H3: 24–32px — sub-judul dan card title");
+            p.push("  Body: 16–18px, line-height 1.7");
+            p.push("  Caption: 12–14px — meta info dan label");
+            p.push("• Letter-spacing heading: -0.02em hingga -0.04em");
+          }
+          p.push("");
+        }
+
+        // TECH STACK
+        if (cssFramework || jsFramework || libs.length) {
+          p.push("⚙️ TECH STACK:");
+          if (cssFramework) p.push(`• CSS: ${cssFramework}`);
+          if (jsFramework) p.push(`• JavaScript: ${jsFramework}`);
+          if (libs.length) {
+            p.push("• Library tambahan (semua via CDN):");
+            libs.forEach((l) => p.push(`  → ${l}`));
+          }
+          if (!isRingkas) {
+            p.push(
+              "• Semua dependency via CDN — tidak ada npm atau build tool",
+            );
+            p.push("• Script JS menggunakan defer attribute");
+            if (isUltra)
+              p.push(
+                "• Inisialisasi semua library setelah DOMContentLoaded event",
+              );
+          }
+          p.push("");
+        }
+
+        // FUNCTIONAL FEATURES
+        if (features.length > 0) {
+          p.push("✨ FUNCTIONAL FEATURES:");
+          p.push(
+            "Implementasikan semua fitur berikut secara penuh dan fungsional:",
+          );
+          features.forEach((f) => p.push(`• ${f}`));
+          p.push("");
+        }
+
+        // BEHAVIOR
+        if (
+          !isRingkas &&
+          (effects.length || features.length || selectedComplexity >= 3)
+        ) {
+          p.push("🧠 BEHAVIOR & INTERACTION:");
+          p.push(
+            "• Durasi animasi: 200–400ms micro interaction, 400–700ms entrance animation",
+          );
+          p.push("• Easing: cubic-bezier(0.4, 0, 0.2, 1) untuk semua transisi");
+          p.push(
+            "• Setiap elemen interaktif harus memiliki :hover, :focus, :active state yang jelas",
+          );
+          if (features.some((f) => f.includes("scroll spy")))
+            p.push(
+              "• Scroll spy menggunakan Intersection Observer API, threshold: 0.6",
+            );
+          if (features.some((f) => f.includes("form")))
+            p.push(
+              "• Form: validasi onBlur, animasi shake pada error, success state dengan warna hijau",
+            );
+          if (isUltra) {
+            p.push(
+              "• prefers-reduced-motion: matikan semua animasi jika user memintanya",
+            );
+            p.push(
+              "• Keyboard navigation: Tab, Enter, Escape berfungsi penuh di semua komponen",
+            );
+          }
+          p.push("");
+        }
+
+        // CONTENT
+        if (tone || language || brandPersona) {
+          p.push("💬 CONTENT & COPYWRITING:");
+          if (tone) p.push(`• Tone of voice: ${tone}`);
+          if (language) p.push(`• Bahasa konten: ${language}`);
+          if (!isRingkas) {
+            p.push(
+              "• Gunakan placeholder content realistis dan relevan (bukan Lorem Ipsum)",
+            );
+            p.push("• Headline harus benefit-driven, spesifik, dan persuasif");
+            p.push(
+              '• CTA button: bahasa aktif dan urgency — "Mulai Sekarang", "Hubungi Kami", dll',
+            );
+          }
+          p.push("");
+        }
+
+        // OUTPUT INSTRUCTION
+        if (codeStructure || boilerplate || qualities.length) {
+          p.push("📦 OUTPUT INSTRUCTION:");
+          if (codeStructure) p.push(`• Struktur file: ${codeStructure}`);
+          if (boilerplate) p.push(`• HTML Boilerplate: ${boilerplate}`);
+          if (qualities.length) {
+            p.push("Standar kualitas kode:");
+            qualities.forEach((q) => p.push(`• ${q}`));
+          }
+          if (!isRingkas) {
+            p.push(
+              "• File dapat langsung dijalankan di browser lokal tanpa server atau build tool",
+            );
+            p.push(
+              "• Gambar: gunakan picsum.photos sebagai placeholder (e.g. https://picsum.photos/800/600)",
+            );
+            if (isUltra) {
+              p.push(
+                "• CSS order: reset/base → variables → layout → components → utilities → responsive",
+              );
+              p.push(
+                "• JS order: constants → utility functions → component functions → event listeners → init",
+              );
+            }
+          }
+          p.push("");
+        }
+
+        // CUSTOM
+        if (custom) {
+          p.push("🧩 INSTRUKSI TAMBAHAN:");
+          p.push(custom);
+          p.push("");
+        }
+
+        // CLOSING
+        p.push("⚠️ MANDATORY RULES:");
+        p.push(
+          "• Hasilkan kode LENGKAP dan FUNGSIONAL — tidak ada bagian kosong, TODO, atau placeholder kode",
+        );
+        p.push(
+          "• Jangan meminta klarifikasi — ikuti spesifikasi dan generate langsung",
+        );
+        p.push(
+          "• Kode harus langsung bisa dijalankan di browser tanpa modifikasi",
+        );
+        if (selectedComplexity >= 3)
+          p.push(
+            "• Perhatikan SETIAP detail visual — spacing, tipografi, warna, dan animasi harus konsisten sempurna",
+          );
+
+        generatedPrompt = p.join("\n");
+
+        // SHOW
+        const textarea = document.getElementById("output-textarea");
+        document.getElementById("emptyState").style.display = "none";
+        document.getElementById("statsBar").style.display = "flex";
+        document.getElementById("outputTabs").style.display = "flex";
+        document.getElementById("qualityBar").style.display = "block";
+        textarea.value = generatedPrompt;
+
+        if (currentTab === "raw") {
+          textarea.style.display = "block";
+          document.getElementById("preview-output").style.display = "none";
+        } else {
+          textarea.style.display = "none";
+          document.getElementById("preview-output").style.display = "block";
+          renderPreview(generatedPrompt);
+        }
+
+        const words = generatedPrompt
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean).length;
+        document.getElementById("statWords").textContent =
+          words.toLocaleString("id");
+        document.getElementById("statChars").textContent =
+          generatedPrompt.length.toLocaleString("id");
+        document.getElementById("statSections").textContent = (
+          generatedPrompt.match(/^[📌📄🎨🖌️🔤⚙️✨💬🤖📦🏆🧩🧠⚠️]/gm) || []
+        ).length;
+
+        const score = calcScore();
+        document.getElementById("qualityScore").textContent = score + "%";
+        setTimeout(() => {
+          document.getElementById("qualityFill").style.width = score + "%";
+        }, 100);
+
+        if (window.innerWidth < 960)
+          document
+            .querySelector(".output-panel")
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function copyOutput() {
+        if (!generatedPrompt) return;
+        navigator.clipboard.writeText(generatedPrompt).then(() => {
+          const btn = document.getElementById("copyBtn");
+          btn.textContent = "✓ Copied!";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "⎘ Copy";
+            btn.classList.remove("copied");
+          }, 2000);
+        });
+      }
+
+      function clearOutput() {
+        generatedPrompt = "";
+        document.getElementById("output-textarea").value = "";
+        document.getElementById("output-textarea").style.display = "none";
+        document.getElementById("preview-output").innerHTML = "";
+        document.getElementById("preview-output").style.display = "none";
+        document.getElementById("emptyState").style.display = "flex";
+        document.getElementById("statsBar").style.display = "none";
+        document.getElementById("outputTabs").style.display = "none";
+        document.getElementById("qualityBar").style.display = "none";
+        document.getElementById("qualityFill").style.width = "0%";
+        currentTab = "raw";
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b, i) => b.classList.toggle("active", i === 0));
+      }
+    </script>
+  </body>
+</html>
